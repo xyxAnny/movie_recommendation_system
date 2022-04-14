@@ -1,2 +1,3 @@
-# movie_recommendation_system
-毕业设计
+# movie_recommendation_system_server
+
+Spring Boot + Spring Security
