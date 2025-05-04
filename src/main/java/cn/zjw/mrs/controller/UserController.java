@@ -3,6 +3,7 @@ package cn.zjw.mrs.controller;
 import cn.zjw.mrs.entity.LoginUser;
 import cn.zjw.mrs.entity.Result;
 import cn.zjw.mrs.entity.User;
+import cn.zjw.mrs.service.LocalAvatarService;
 import cn.zjw.mrs.service.OssService;
 import cn.zjw.mrs.service.UserService;
 import cn.zjw.mrs.utils.Base64DecodedMultipartFile;
@@ -31,8 +32,12 @@ public class UserController {
     @Resource
     UserService userService;
 
+//    @Resource
+//    OssService ossService;
+
     @Resource
-    OssService ossService;
+    LocalAvatarService localAvatarService;
+
 
     @PostMapping("/login")
     public Result<?> login(@RequestBody User user) {
@@ -91,6 +96,19 @@ public class UserController {
             return Result.success("性别更新成功(‾◡◝)", null);
     }
 
+//    @PostMapping("/update/avatar")
+//    public Result<?> updateUserAvatar(@RequestBody String avatar, Principal principal) {
+//        if (Strings.isBlank(avatar)) {
+//            return Result.error("头像更新失败(┬┬﹏┬┬)");
+//        }
+//        // base64转MultipartFile文件
+//        MultipartFile avatarFile = Base64DecodedMultipartFile.base64ToMultipart(avatar);
+//        boolean isSuccess = ossService.updateAvatar(principal.getName(), avatarFile);
+//        if (!isSuccess) {
+//            return Result.error("头像上传失败(┬┬﹏┬┬)");
+//        }
+//        return Result.success("头像修改成功(‾◡◝)", null);
+//    }
     @PostMapping("/update/avatar")
     public Result<?> updateUserAvatar(@RequestBody String avatar, Principal principal) {
         if (Strings.isBlank(avatar)) {
@@ -98,12 +116,13 @@ public class UserController {
         }
         // base64转MultipartFile文件
         MultipartFile avatarFile = Base64DecodedMultipartFile.base64ToMultipart(avatar);
-        boolean isSuccess = ossService.updateAvatar(principal.getName(), avatarFile);
+        boolean isSuccess = localAvatarService.updateAvatar(principal.getName(), avatarFile);
         if (!isSuccess) {
             return Result.error("头像上传失败(┬┬﹏┬┬)");
         }
         return Result.success("头像修改成功(‾◡◝)", null);
     }
+
 
     @GetMapping("/get/mail")
     public Result<?> getUserMail(Principal principal) {

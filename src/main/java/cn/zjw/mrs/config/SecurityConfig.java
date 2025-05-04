@@ -4,37 +4,26 @@ import cn.zjw.mrs.filter.JwtAuthenticationTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import javax.annotation.Resource;
 
-/**
- * @author zjw
- * @Classname SecurityConfig
- * @Date 2022/4/11 16:34
- * @Description
- */
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    /**
-     * 创建BCryptPasswordEncoder注入容器
-     * 配置完后，系统默认使用BCryptPasswordEncoder
-     * @return
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Resource
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
@@ -45,17 +34,43 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private AccessDeniedHandler accessDeniedHandler;
 
+    @Resource
+    private UserDetailsService userDetailsService; // 自定义的 UserDetailsService 实现
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                //关闭csrf
+                .headers()
+                .xssProtection()
+                .and()
+                .contentTypeOptions()
+                .and()
+                .frameOptions().deny()
+                .and()
                 .csrf().disable()
-                //不通过Session获取SecurityContext
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                // 不需要登录可以直接访问
-                .antMatchers("/movie",
+                .antMatchers(
+                        "/movie",
                         "/movie/info",
                         "/movie/recommend",
                         "/user/register",
@@ -66,29 +81,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/check/auth/code",
                         "/check/username/exists",
                         "/mail/auth/code/under/logout",
-                        "/find/password").permitAll()
-                // 对于登录接口 允许匿名访问
+                        "/images/**",
+                        "/find/password"
+                ).permitAll()
                 .antMatchers("/user/login").anonymous()
-                // 除上面外的所有请求全部需要鉴权认证
-                .anyRequest().authenticated();
-
-        // 添加过滤器，把token校验过滤器添加到过滤器链中
-        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // 配置异常处理器
-        http.exceptionHandling()
-                // 配置认证失败处理器
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
-                // 配置授权失败处理器
-                .accessDeniedHandler(accessDeniedHandler);
-
-        //允许跨域
-        http.cors();
+                .accessDeniedHandler(accessDeniedHandler)
+                .and()
+                .cors();
     }
 
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:9999");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 }
