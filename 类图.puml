@@ -1,0 +1,1004 @@
+@startuml
+class cn.zjw.mrs.MovieRecommendationSystemApplication {
++ {static} void main(String[])
+}
+
+class cn.zjw.mrs.utils.RedisKeyUtil {
++ {static} String MAP_KEY_USER_LIKED
++ {static} String MAP_KEY_USER_LIKED_COUNT
++ {static} String getLikedKey(long,long)
+}
+
+
+class cn.zjw.mrs.RedisTest {
+- RedisCache redisCache
++ void test1()
+}
+
+
+class cn.zjw.mrs.vo.movie.relation.LinkVo {
+- String source
+- String target
+- Double idx
+}
+
+class cn.zjw.mrs.service.impl.UserLikeServiceImpl {
+- RedisCache redisCache
+- UserLikeRedisService userLikeRedisService
+- UserLikeMapper userLikeMapper
+- CommentMapper commentMapper
++ void transLikedFromRedis2Database()
++ void transLikedCountFromRedis2Database()
++ int getUserLikeStatus(long,long)
+}
+
+
+interface cn.zjw.mrs.mapper.RegionLikeMapper {
+}
+class cn.zjw.mrs.entity.TypeLike {
+- Long uid
+- Integer tid
+- Integer degree
+- {static} long serialVersionUID
+}
+
+interface cn.zjw.mrs.service.UserLikeRedisService {
+~ int getUserLikeStatusFromRedis(long,long)
+~ void likeComment(long,long)
+~ void unlikeComment(long,long)
+~ void deleteLikedFromRedis(long,long)
+~ int getUserLikeCountFromRedis(long)
+~ void increaseLikedCount(long)
+~ void decreaseLikedCount(long)
+~ List<UserLike> getAllLikedDataFromRedis()
+~ List<Comment> getAllLikedCountFromRedis()
+}
+
+class cn.zjw.mrs.config.MySqlDataModelConfig {
+- String username
+- String password
++ DataModel getMySqlDataModel()
+}
+
+
+interface cn.zjw.mrs.mapper.SameLikesMapper {
+}
+class cn.zjw.mrs.service.impl.MovieServiceImpl {
+- {static} String TOTAL
+~ MovieMapper movieMapper
++ Page<Movie> getPageMovies(Integer,Integer,String,String,String)
++ List<MovieCardVo> getRecommendedMoviesByMovieId(Long)
++ Map<String,Object> getMoreReviewedMoviesByUserId(Long,Integer,Integer)
++ List<String> getMatchMovieName(String)
++ List<MovieCardVo> getMostWatchedMovies()
++ List<MovieCardVo> getHighestRatedMovies()
+}
+
+
+class cn.zjw.mrs.utils.MailUtil {
+- Logger logger
+- JavaMailSender mailSender
+- String from
++ void sendSimpleMail(String,String,String)
++ void sendHtmlMail(String,String,String)
++ void sendAttachmentsMail(String,String,String,String)
+}
+
+
+class cn.zjw.mrs.config.RedisConfig {
++ RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory)
+}
+
+class cn.zjw.mrs.entity.MovieFeature {
+- Long mid
+- String matrix
+- {static} long serialVersionUID
+}
+
+interface cn.zjw.mrs.service.MovieService {
+~ Page<Movie> getPageMovies(Integer,Integer,String,String,String)
+~ List<MovieCardVo> getRecommendedMoviesByMovieId(Long)
+~ Map<String,Object> getMoreReviewedMoviesByUserId(Long,Integer,Integer)
+~ List<String> getMatchMovieName(String)
+~ List<MovieCardVo> getMostWatchedMovies()
+~ List<MovieCardVo> getHighestRatedMovies()
+}
+
+class cn.zjw.mrs.MailTest {
+- AuthService authService
++ void sendMailTest()
+}
+
+
+interface cn.zjw.mrs.service.RecommendationService {
+~ void solveColdStart(long)
+~ List<Recommendation> randomRecommended(Long,Integer)
+~ List<RecommendedMovieVo> getRecommendedMoviesByUserId(Long)
+~ Map<String,List<?>> getLinksBetweenWatchedMoviesAndRecommendedMovies(Long)
+~ void updateRecommendation(Long)
+}
+
+class cn.zjw.mrs.config.SecurityConfig {
+- JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter
+- AuthenticationEntryPoint authenticationEntryPoint
+- AccessDeniedHandler accessDeniedHandler
+- UserDetailsService userDetailsService
++ PasswordEncoder passwordEncoder()
++ AuthenticationManager authenticationManagerBean()
+# void configure(AuthenticationManagerBuilder)
+# void configure(HttpSecurity)
++ CorsFilter corsFilter()
+}
+
+
+class cn.zjw.mrs.entity.SameLikes {
+- Long did
+- Long sid
+- {static} long serialVersionUID
+}
+
+class cn.zjw.mrs.controller.UserPreferenceController {
+- RegionLikeService regionLikeService
+- TypeLikeService typeLikeService
+- UserService userService
+- RecommendationService recommendationService
++ Result<?> getTypesAndRegions(Authentication)
++ Result<?> updateUserTypeLike(int[],Authentication)
++ Result<?> updateUserRegionLike(int[],Authentication)
+}
+
+
+class cn.zjw.mrs.service.impl.MovieTypeServiceImpl {
+}
+class cn.zjw.mrs.service.impl.AuthServiceImpl {
+- Logger logger
+- RedisCache redisCache
+- MailUtil mailUtil
+- UserMapper userMapper
++ void sendMailAuthCode(String,String)
++ int judgeAuthCode(String,String)
++ boolean judgeMailBelongToUser(String,String)
++ boolean judgeUsernameExists(String)
+}
+
+
+class cn.zjw.mrs.RecommendTest {
+- RecommendationService service
++ void testUpdateRecommendation()
++ void testUserBasedRecommender()
+}
+
+
+interface cn.zjw.mrs.mapper.MovieRegionMapper {
+~ List<MovieRegion> selectRecommendedMoviesRegionsByUserId(Long)
+~ List<MovieRegion> selectWatchedMoviesRegionsByUserId(Long,Integer)
+}
+
+class cn.zjw.mrs.service.impl.UserDetailsServiceImpl {
+~ UserMapper userMapper
++ UserDetails loadUserByUsername(String)
+}
+
+
+interface cn.zjw.mrs.service.MovieRegionService {
+}
+class cn.zjw.mrs.service.impl.MovieFeatureServiceImpl {
+}
+interface cn.zjw.mrs.service.UserService {
+~ Result<?> login(User)
+~ Result<?> logout()
+~ Result<?> register(User)
+~ UserInfoVo getUserInfo(Long)
+~ Map<String,List<?>> getTypesAndRegions(Long)
+~ int updateNickname(String)
+~ int updateSex(String,String)
+~ int updatePassword(String,String,String,boolean)
+}
+
+interface cn.zjw.mrs.mapper.RecommendationMapper {
+~ List<RecommendedMovieVo> selectRecommendedMoviesByUserId(Long,Integer)
+}
+
+class cn.zjw.mrs.vo.movie.ReviewedMovieStripVo {
+- Long id
+- Long did
+- String name
+- double score
+- double userScore
+- String pic
+- String directors
+- String actors
+- String regions
+- String types
+- Timestamp time
+}
+
+class cn.zjw.mrs.vo.movie.RecommendedMovieVo {
+- Long id
+- Long did
+- String name
+- Double score
+- String pic
+- String directors
+- String actors
+- String regions
+- String types
+- Double idx
+}
+
+class cn.zjw.mrs.entity.MovieType {
+- Long mid
+- Integer tid
+- Integer degree
+- {static} long serialVersionUID
+}
+
+class cn.zjw.mrs.entity.UserLike {
+- Long id
+- Long cid
+- Long uid
+- Integer status
+- {static} long serialVersionUID
+}
+
+class cn.zjw.mrs.service.impl.OssServiceImpl {
+- int maxSize
+- String bucketName
+- String dirPrefix
+- OSSClient ossClient
+- UserMapper userMapper
+- String getAvatarObjectName()
+- String formatPath(String)
++ boolean updateAvatar(String,MultipartFile)
+}
+
+
+class cn.zjw.mrs.entity.Recommendation {
+- Long uid
+- Long mid
+- Double idx
+- Integer type
+- {static} long serialVersionUID
+}
+
+interface cn.zjw.mrs.service.SameLikesService {
+}
+class cn.zjw.mrs.filter.JwtAuthenticationTokenFilter {
+- RedisCache redisCache
+# void doFilterInternal(HttpServletRequest,HttpServletResponse,FilterChain)
+}
+
+
+class cn.zjw.mrs.utils.PicUrlUtil {
++ {static} String getFullAvatarUrl(String)
++ {static} String getFullMoviePicUrl(String)
+}
+
+class cn.zjw.mrs.controller.CommentController {
+- CommentService commentService
+- RecommendationService recommendationService
+- UserLikeService userLikeService
+- UserLikeRedisService userLikeRedisService
+- Result<?> addComment(Comment,Principal,Authentication)
+- Result<?> getOwnComment(Long,Authentication)
+- Result<?> getMoreCommentsByMovieId(Long,int,int,Authentication)
+- Result<?> getMoreOwnCommentMovieMoments(Integer,Integer,Authentication)
+- Result<?> removeOwnComment(String,Authentication)
+- Result<?> getCommentsWordCloudData(long)
+- Result<?> likeComment(Map<String,String>,Authentication)
+}
+
+
+class cn.zjw.mrs.handler.AuthenticationEntryPointImpl {
++ void commence(HttpServletRequest,HttpServletResponse,AuthenticationException)
+}
+
+enum cn.zjw.mrs.enums.RecommendationTypeEnum {
++  RANDOM
++  CONTENT_BASED
++  USER_BASED_CF
+- Integer typeCode
+- String typeName
+}
+
+class cn.zjw.mrs.service.impl.MovieRegionServiceImpl {
+}
+class cn.zjw.mrs.entity.User {
+- Long id
+- String username
+- String nickname
+- String password
+- String avatar
+- SexEnum sex
+- Integer state
+- Timestamp createTime
+- String mail
+- {static} long serialVersionUID
+}
+
+interface cn.zjw.mrs.mapper.MovieFeatureMapper {
+~ List<MovieFeature> selectAllMovieFeaturesWhereUserNotWatchedAndScoreMoreThanFive(Long)
+~ List<MovieFeature> selectRecommendedMoviesFeaturesByUserId(Long,Integer)
+~ List<MovieFeature> selectWatchedMoviesFeaturesByUserId(Long,Integer)
+}
+
+class cn.zjw.mrs.vo.movie.relation.CategoryVo {
+- String name
+- String base
+}
+
+class cn.zjw.mrs.config.ExecutorConfig {
+- {static} Logger logger
+- {static} int CPU_NUM
+- {static} int QUEUE_CAPACITY
++ Executor asyncServiceExecutor()
+}
+
+
+interface cn.zjw.mrs.service.MovieTypeService {
+}
+class cn.zjw.mrs.utils.MyDataModel {
++ {static} JDBCDataModel myDataModel()
+}
+
+class cn.zjw.mrs.MovieRecommendationSystemApplicationTests {
+~ void contextLoads()
+}
+
+class cn.zjw.mrs.service.impl.SameLikesServiceImpl {
+}
+interface cn.zjw.mrs.service.CommentService {
+~ Integer addComment(Comment,String)
+~ CommentStripVo getOwnComment(Long,Long)
+~ List<CommentStripVo> getMoreCommentsByMovieId(Long,int,int)
+~ Map<String,Object> getMoreOwnCommentMovieMoments(Long,Integer,Integer)
+~ int removeOwnComment(Long,Long)
+~ List<Map<String,String>> getCommentsWordCloudData(long)
+}
+
+interface cn.zjw.mrs.service.UserLikeService {
+~ void transLikedFromRedis2Database()
+~ void transLikedCountFromRedis2Database()
+~ int getUserLikeStatus(long,long)
+}
+
+enum cn.zjw.mrs.enums.RegionEnum {
++  MAINLAND_CHINA
++  USA
++  HONG_KONG
++  CHINESE_TAIWAN
++  JAPAN
++  KOREA
++  UK
++  FRANCE
++  GERMANY
++  ITALY
++  SPAIN
++  INDIA
++  THAILAND
++  RUSSIA
++  IRAN
++  CANADA
++  AUSTRALIA
++  IRELAND
++  SWEDEN
++  BRAZIL
++  DENMARK
+- Integer region
+- String regionName
++ {static} Integer findRegionByRegionName(String)
++ {static} String findRegionNameByRegion(Integer)
+}
+
+
+class cn.zjw.mrs.entity.Comment {
+- Long id
+- Long uid
+- Long mid
+- String comment
+- Integer score
+- Timestamp time
+- Integer agree
+- Integer type
+- String nickname
+- {static} long serialVersionUID
+}
+
+class cn.zjw.mrs.config.OssClientConfig {
+- String endpoint
+- String accessKeyId
+- String accessKeySecret
++ OSSClient createOssClient()
+}
+
+
+class cn.zjw.mrs.config.MybatisPlusConfig {
++ MybatisPlusInterceptor mybatisPlusInterceptor()
+}
+
+interface cn.zjw.mrs.mapper.TypeLikeMapper {
+}
+interface cn.zjw.mrs.mapper.UserMapper {
+~ List<String> selectUserTypes(Long)
+~ List<String> selectUserRegions(Long)
+}
+
+enum cn.zjw.mrs.enums.HttpCodeEnum {
++  SUCCESS
++  NEED_LOGIN
++  NO_OPERATOR_AUTH
++  SYSTEM_ERROR
++  USERNAME_EXIST
++  PHONE_NUMBER_EXIST
++  EMAIL_EXIST
++  REQUIRE_USERNAME
++  LOGIN_ERROR
+~ int code
+~ String msg
++ int getCode()
++ String getMsg()
+}
+
+
+interface cn.zjw.mrs.mapper.CommentMapper {
+~ CommentStripVo selectOwnCommentByUidAndMid(Long,Long)
+~ List<CommentStripVo> selectMoreCommentsByMovieId(Long,int,int)
+~ List<CommentMovieVo> selectOwnCommentMovieMoments(Long,Integer,Integer)
+~ List<Preference> selectAllPreferences()
+}
+
+class cn.zjw.mrs.vo.user.UserInfoVo {
+- Long id
+- String username
+- String nickname
+- String avatar
+- String sex
+}
+
+class cn.zjw.mrs.entity.LoginUser {
+- User user
+- List<String> permissions
+- List<SimpleGrantedAuthority> authorities
++ Collection<? extends GrantedAuthority> getAuthorities()
++ String getPassword()
++ String getUsername()
++ boolean isAccountNonExpired()
++ boolean isAccountNonLocked()
++ boolean isCredentialsNonExpired()
++ boolean isEnabled()
+}
+
+
+interface cn.zjw.mrs.service.TypeLikeService {
+~ int updateUserTypeLike(Long,int[])
+}
+
+class cn.zjw.mrs.UserLikeTest {
+- UserLikeRedisService userLikeRedisService
+- UserLikeService userLikeService
++ void test()
+}
+
+
+class cn.zjw.mrs.entity.RegionLike {
+- Long uid
+- Integer rid
+- Integer degree
+- {static} long serialVersionUID
+}
+
+interface cn.zjw.mrs.service.MovieFeatureService {
+}
+enum cn.zjw.mrs.enums.TypeEnum {
++  DRAMA
++  COMEDY
++  ACTION
++  LOVE
++  SCIENCE_FICTION
++  ANIMATION
++  SUSPENSE
++  THRILLER
++  HORROR
++  CRIME
++  MUSIC
++  SONG_AND_DANCE
++  BIOGRAPHY
++  HISTORY
++  WAR
++  WEST
++  FANTASY
++  ADVENTURE
++  DISASTER
++  MARTIAL
++  OTHER
+- Integer type
+- String typeName
++ {static} Integer findTypeByTypeName(String)
++ {static} String findRegionNameByRegion(Integer)
+}
+
+
+interface cn.zjw.mrs.mapper.UserLikeMapper {
+}
+class cn.zjw.mrs.vo.movie.MovieCardVo {
+- Long id
+- String name
+- double score
+- String pic
+- Long num
+}
+
+class cn.zjw.mrs.CommentTest {
+- CommentMapper commentMapper
++ void getOwnCommentTest()
++ void getCommentsByMovieId()
++ void getCommentMovieMoments()
++ void getAllPreferences()
+}
+
+
+class cn.zjw.mrs.utils.RedisCache {
++ RedisTemplate redisTemplate
++ void setCacheObject(String,T)
++ void setCacheObject(String,T,Integer,TimeUnit)
++ boolean expire(String,long)
++ boolean expire(String,long,TimeUnit)
++ T getCacheObject(String)
++ boolean deleteObject(String)
++ long deleteObject(Collection)
++ long setCacheList(String,List<T>)
++ List<T> getCacheList(String)
++ BoundSetOperations<String,T> setCacheSet(String,Set<T>)
++ Set<T> getCacheSet(String)
++ void setCacheMap(String,Map<String,T>)
++ Map<String,T> getCacheMap(String)
++ void setCacheMapValue(String,String,T)
++ T getCacheMapValue(String,String)
++ void delCacheMapValue(String,String)
++ void increaseCacheMapValue(String,String,int)
++ List<T> getMultiCacheMapValue(String,Collection<Object>)
++ Cursor<Map.Entry<Object,Object>> getAllCacheMapValueCursor(String)
++ Collection<String> keys(String)
+}
+
+
+interface cn.zjw.mrs.service.RegionLikeService {
+~ int updateUserRegionLike(Long,int[])
+}
+
+interface cn.zjw.mrs.service.OssService {
+~ boolean updateAvatar(String,MultipartFile)
+}
+
+class cn.zjw.mrs.utils.JwtUtil {
++ {static} Long JWT_TTL
++ {static} String JWT_KEY
++ {static} String getUuid()
++ {static} String createJwt(String)
++ {static} String createJwt(String,Long)
+- {static} JwtBuilder getJwtBuilder(String,Long,String)
++ {static} String createJwt(String,String,Long)
++ {static} SecretKey generalKey()
++ {static} Claims parseJwt(String)
+}
+
+
+class cn.zjw.mrs.controller.UserController {
+~ UserService userService
+~ OssService ossService
++ Result<?> login(User)
++ Result<?> logout()
++ Result<?> register(User)
++ Result<?> updatePassword(Map<String,String>,Principal)
++ Result<?> isLogin()
++ Result<?> getUserInfo(Authentication)
++ Result<?> updateUserNickname(String)
++ Result<?> updateUserSex(String,Principal)
++ Result<?> updateUserAvatar(String,Principal)
++ Result<?> getUserMail(Principal)
+}
+
+
+class cn.zjw.mrs.vo.user.LoginUserVo {
+- String token
+- UserInfoVo userInfo
+}
+
+enum cn.zjw.mrs.enums.LikedStatusEnum {
++  LIKE
++  UNLIKE
+- Integer code
+- String msg
+}
+
+class cn.zjw.mrs.controller.MovieController {
+- MovieService movieService
++ Result<?> getPagesByTypeAndRegion(Integer,Integer,String,String,String)
++ Result<?> getMovieInfo(Integer)
++ Result<?> getRecommendedMovies(Long)
++ Result<?> getAllReviewedMovies(Integer,Integer,Authentication)
++ Result<?> getMatchMovieName(String)
++ Result<?> getMostWatchedMovies()
++ Result<?> getHighestRatedMovies()
+}
+
+
+class cn.zjw.mrs.utils.FastJsonRedisSerializer {
++ {static} Charset DEFAULT_CHARSET
+- Class<T> clazz
++ byte[] serialize(T)
++ T deserialize(byte[])
+# JavaType getJavaType(Class<?>)
+}
+
+
+class cn.zjw.mrs.service.impl.UserServiceImpl {
+- AuthenticationManager authenticationManager
+- RedisCache redisCache
+- UserMapper userMapper
+- CommentMapper commentMapper
+- RecommendationService recommendationService
+- PasswordEncoder passwordEncoder
++ Result<?> login(User)
++ Result<?> logout()
++ Result<?> register(User)
++ UserInfoVo getUserInfo(Long)
++ Map<String,List<?>> getTypesAndRegions(Long)
++ int updateNickname(String)
++ int updateSex(String,String)
++ int updatePassword(String,String,String,boolean)
+}
+
+
+class cn.zjw.mrs.utils.RecommendationUtil {
++ {static} void randomSet(int,int,int,Set<Integer>)
+}
+
+class cn.zjw.mrs.vo.comment.CommentStripVo {
+- long id
+- int score
+- String comment
+- Timestamp time
+- int agree
+- int type
+- String nickname
+- String avatar
+- Integer status
+}
+
+class cn.zjw.mrs.config.CorsConfig {
++ void addCorsMappings(CorsRegistry)
+}
+
+class cn.zjw.mrs.entity.Preference {
+- Long uid
+- Long mid
+- Integer score
+- Integer cnt
+}
+
+class cn.zjw.mrs.controller.AuthController {
+- AuthService authService
+- RedisCache redisCache
+- UserService userService
++ Result<?> sendMailAuthCode(Map<String,String>,Authentication)
++ Result<?> sendMailAuthCodeUnderLogout(Map<String,String>)
++ Result<?> judgeAuthCode(Map<String,String>)
++ Result<?> judgeUsernameExists(String)
++ Result<?> judgeAndFindPassword(Map<String,String>)
++ Result<?> judgeAuthCodeAndUpdateUserMail(Map<String,String>,Authentication)
+}
+
+
+class cn.zjw.mrs.service.impl.UserLikeRedisServiceImpl {
+- RedisCache redisCache
++ int getUserLikeStatusFromRedis(long,long)
++ void likeComment(long,long)
++ void unlikeComment(long,long)
++ void deleteLikedFromRedis(long,long)
++ int getUserLikeCountFromRedis(long)
++ void increaseLikedCount(long)
++ void decreaseLikedCount(long)
++ List<UserLike> getAllLikedDataFromRedis()
++ List<Comment> getAllLikedCountFromRedis()
+}
+
+
+class cn.zjw.mrs.service.impl.CommentServiceImpl {
+- CommentMapper commentMapper
+- UserMapper userMapper
+- UserLikeRedisService userLikeRedisService
+- UserLikeService userLikeService
++ Integer addComment(Comment,String)
++ CommentStripVo getOwnComment(Long,Long)
++ List<CommentStripVo> getMoreCommentsByMovieId(Long,int,int)
++ Map<String,Object> getMoreOwnCommentMovieMoments(Long,Integer,Integer)
++ int removeOwnComment(Long,Long)
++ List<Map<String,String>> getCommentsWordCloudData(long)
+}
+
+
+class cn.zjw.mrs.entity.Movie {
+- Long id
+- Long did
+- String name
+- Integer year
+- String directors
+- String writers
+- String actors
+- String types
+- String regions
+- String languages
+- String releaseDate
+- String runtime
+- String alias
+- String imdb
+- Double score
+- String num
+- Double five
+- Double four
+- Double three
+- Double two
+- Double one
+- String introduction
+- String pic
+- Timestamp crawlTime
+- {static} long serialVersionUID
++ boolean equals(Object)
++ int hashCode()
++ String toString()
+}
+
+
+class cn.zjw.mrs.service.impl.RegionLikeServiceImpl {
+- RegionLikeMapper regionLikeMapper
++ int updateUserRegionLike(Long,int[])
+}
+
+
+interface cn.zjw.mrs.mapper.MovieMapper {
+~ List<MovieCardVo> selectRecommendedMoviesByMovieId(Long)
+~ List<ReviewedMovieStripVo> selectMoreReviewedMoviesByUserId(Long,Integer,Integer)
+~ List<ReviewedMovieStripVo> selectSomeReviewedMoviesByUserId(Long,Integer)
+~ List<MovieCardVo> selectMostWatchedMovies(Integer)
+~ List<MovieCardVo> selectHighestRatedMovies(Integer)
+}
+
+class cn.zjw.mrs.utils.WebUtils {
++ {static} String renderString(HttpServletResponse,String)
+}
+
+class cn.zjw.mrs.MovieTest {
+- MovieMapper movieMapper
+- MovieTypeMapper movieTypeMapper
+- MovieRegionMapper movieRegionMapper
++ void selectAllReviewedMoviesByUserId()
++ void testMovieTypeAndRegionMapper()
+}
+
+
+class cn.zjw.mrs.utils.Base64DecodedMultipartFile {
+- byte[] imgContent
+- String header
++ String getName()
++ String getOriginalFilename()
++ String getContentType()
++ boolean isEmpty()
++ long getSize()
++ byte[] getBytes()
++ java.io.InputStream getInputStream()
++ void transferTo(File)
++ {static} MultipartFile base64ToMultipart(String)
++ {static} void approvalFile(MultipartFile,String)
+}
+
+
+class cn.zjw.mrs.utils.FileUtil {
++ {static} List<String> readStopWords()
+}
+
+class cn.zjw.mrs.service.impl.RecommendationServiceImpl {
+- {static} Recommender userCfRecommender
+- {static} int TYPES_OR_REGIONS_LENGTH
+- {static} int USER_LIKE_WEIGHT
+- {static} int THIRTY_RECOMMENDATIONS
+- RecommendationMapper recommendationMapper
+- MovieTypeMapper movieTypeMapper
+- MovieRegionMapper movieRegionMapper
+- MovieFeatureMapper movieFeatureMapper
+- MovieMapper movieMapper
+- TypeLikeMapper typeLikeMapper
+- RegionLikeMapper regionLikeMapper
+- CommentMapper commentMapper
++ void updateUserBasedCollaborativeFilteringRecommendationRecommender()
++ List<Recommendation> randomRecommended(Long,Integer)
++ void solveColdStart(long)
++ List<RecommendedMovieVo> getRecommendedMoviesByUserId(Long)
++ Map<String,List<?>> getLinksBetweenWatchedMoviesAndRecommendedMovies(Long)
++ void updateRecommendation(Long)
++ List<Pair<Long,Double>> getContentBasedMovieRecommendationResult(long,int)
+- double[] formatMovieFeatureMatrix(String)
+- double calculateTheUsersPreferenceForMovies(double[],double[])
+- double[] computeUserPreferenceMatrix(Long)
+- void addTypeLikesIntoUserMatrix(Long,Map<Integer,List<Integer>>)
+- void addRegionLikesIntoUserMatrix(Long,Map<Integer,List<Integer>>)
+- void makeUserMatrix(Map<Integer,List<Integer>>,double,List<Double>)
+}
+
+
+class cn.zjw.mrs.service.impl.TypeLikeServiceImpl {
+- TypeLikeMapper typeLikeMapper
++ int updateUserTypeLike(Long,int[])
+}
+
+
+class cn.zjw.mrs.handler.AccessDeniedHandlerImpl {
++ void handle(HttpServletRequest,HttpServletResponse,AccessDeniedException)
+}
+
+class cn.zjw.mrs.controller.RecommendationController {
+- RecommendationService recommendationService
++ Result<?> getRecommendedMovies(Authentication)
++ Result<?> getLinksBetweenWatchedMoviesAndRecommendedMovies(Authentication)
+}
+
+
+interface cn.zjw.mrs.service.AuthService {
+~ void sendMailAuthCode(String,String)
+~ int judgeAuthCode(String,String)
+~ boolean judgeMailBelongToUser(String,String)
+~ boolean judgeUsernameExists(String)
+}
+
+interface cn.zjw.mrs.mapper.MovieTypeMapper {
+~ List<MovieType> selectRecommendedMoviesTypesByUserId(Long)
+~ List<MovieType> selectWatchedMoviesTypesByUserId(Long,Integer)
+}
+
+class cn.zjw.mrs.vo.comment.CommentMovieVo {
+- CommentStripVo commentStripVo
+- MovieStripVo movieStripVo
+}
+
+enum cn.zjw.mrs.enums.SexEnum {
++  MALE
++  FEMALE
++  SECRET
+- Integer sex
+- String sexName
++ {static} Integer findSexBySexName(String)
++ {static} String findSexNameBySex(Integer)
+}
+
+
+class cn.zjw.mrs.entity.Result {
+- Integer code
+- String msg
+- Object data
++ {static} Result<T> success()
++ {static} Result<T> success(T)
++ {static} Result<T> success(String)
++ {static} Result<T> success(String,T)
++ {static} Result<T> error()
++ {static} Result<T> error(String)
++ {static} Result<T> error(String,T)
++ {static} Result<T> error(int,String)
+}
+
+
+class cn.zjw.mrs.vo.movie.relation.NodeVo {
+- Long id
+- Long mid
+- String name
+- String value
+- Integer category
+- String types
+- String regions
+}
+
+class cn.zjw.mrs.vo.movie.MovieStripVo {
+- Long id
+- Long did
+- String name
+- double score
+- String pic
+- String directors
+- String actors
+- String regions
+- String types
+}
+
+class cn.zjw.mrs.JiebaTest {
++ void testDemo()
++ {static} void main(String[])
+}
+
+class cn.zjw.mrs.entity.MovieRegion {
+- Long mid
+- Integer rid
+- Integer degree
+- {static} long serialVersionUID
+}
+
+class cn.zjw.mrs.UserMapperTest {
+- UserMapper userMapper
+- MovieMapper movieMapper
+- CommentMapper commentMapper
++ void testUserMapper()
++ void TestBCryptPasswordEncoder()
++ void TestEnum()
++ void TestGetUserTypes()
++ void TestGetRecommendedMovies()
+}
+
+
+
+
+cn.zjw.mrs.service.UserLikeService <|.. cn.zjw.mrs.service.impl.UserLikeServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.UserLikeServiceImpl
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.RegionLikeMapper
+java.io.Serializable <|.. cn.zjw.mrs.entity.TypeLike
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.SameLikesMapper
+cn.zjw.mrs.service.MovieService <|.. cn.zjw.mrs.service.impl.MovieServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.MovieServiceImpl
+java.io.Serializable <|.. cn.zjw.mrs.entity.MovieFeature
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.MovieService
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.RecommendationService
+org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter <|-- cn.zjw.mrs.config.SecurityConfig
+java.io.Serializable <|.. cn.zjw.mrs.entity.SameLikes
+cn.zjw.mrs.service.MovieTypeService <|.. cn.zjw.mrs.service.impl.MovieTypeServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.MovieTypeServiceImpl
+cn.zjw.mrs.service.AuthService <|.. cn.zjw.mrs.service.impl.AuthServiceImpl
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.MovieRegionMapper
+org.springframework.security.core.userdetails.UserDetailsService <|.. cn.zjw.mrs.service.impl.UserDetailsServiceImpl
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.MovieRegionService
+cn.zjw.mrs.service.MovieFeatureService <|.. cn.zjw.mrs.service.impl.MovieFeatureServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.MovieFeatureServiceImpl
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.UserService
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.RecommendationMapper
+java.io.Serializable <|.. cn.zjw.mrs.entity.MovieType
+java.io.Serializable <|.. cn.zjw.mrs.entity.UserLike
+cn.zjw.mrs.service.OssService <|.. cn.zjw.mrs.service.impl.OssServiceImpl
+java.io.Serializable <|.. cn.zjw.mrs.entity.Recommendation
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.SameLikesService
+org.springframework.web.filter.OncePerRequestFilter <|-- cn.zjw.mrs.filter.JwtAuthenticationTokenFilter
+org.springframework.security.web.AuthenticationEntryPoint <|.. cn.zjw.mrs.handler.AuthenticationEntryPointImpl
+cn.zjw.mrs.service.MovieRegionService <|.. cn.zjw.mrs.service.impl.MovieRegionServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.MovieRegionServiceImpl
+java.io.Serializable <|.. cn.zjw.mrs.entity.User
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.MovieFeatureMapper
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.MovieTypeService
+cn.zjw.mrs.service.SameLikesService <|.. cn.zjw.mrs.service.impl.SameLikesServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.SameLikesServiceImpl
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.CommentService
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.UserLikeService
+java.io.Serializable <|.. cn.zjw.mrs.entity.Comment
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.TypeLikeMapper
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.UserMapper
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.CommentMapper
+org.springframework.security.core.userdetails.UserDetails <|.. cn.zjw.mrs.entity.LoginUser
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.TypeLikeService
+java.io.Serializable <|.. cn.zjw.mrs.entity.RegionLike
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.MovieFeatureService
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.UserLikeMapper
+com.baomidou.mybatisplus.extension.service.IService <|-- cn.zjw.mrs.service.RegionLikeService
+org.springframework.data.redis.serializer.RedisSerializer <|.. cn.zjw.mrs.utils.FastJsonRedisSerializer
+cn.zjw.mrs.service.UserService <|.. cn.zjw.mrs.service.impl.UserServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.UserServiceImpl
+org.springframework.web.servlet.config.annotation.WebMvcConfigurer <|.. cn.zjw.mrs.config.CorsConfig
+cn.zjw.mrs.service.UserLikeRedisService <|.. cn.zjw.mrs.service.impl.UserLikeRedisServiceImpl
+cn.zjw.mrs.service.CommentService <|.. cn.zjw.mrs.service.impl.CommentServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.CommentServiceImpl
+java.io.Serializable <|.. cn.zjw.mrs.entity.Movie
+cn.zjw.mrs.service.RegionLikeService <|.. cn.zjw.mrs.service.impl.RegionLikeServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.RegionLikeServiceImpl
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.MovieMapper
+org.springframework.web.multipart.MultipartFile <|.. cn.zjw.mrs.utils.Base64DecodedMultipartFile
+cn.zjw.mrs.service.RecommendationService <|.. cn.zjw.mrs.service.impl.RecommendationServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.RecommendationServiceImpl
+cn.zjw.mrs.service.TypeLikeService <|.. cn.zjw.mrs.service.impl.TypeLikeServiceImpl
+com.baomidou.mybatisplus.extension.service.impl.ServiceImpl <|-- cn.zjw.mrs.service.impl.TypeLikeServiceImpl
+org.springframework.security.web.access.AccessDeniedHandler <|.. cn.zjw.mrs.handler.AccessDeniedHandlerImpl
+com.baomidou.mybatisplus.core.mapper.BaseMapper <|-- cn.zjw.mrs.mapper.MovieTypeMapper
+java.io.Serializable <|.. cn.zjw.mrs.entity.MovieRegion
+@enduml
