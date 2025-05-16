@@ -1,0 +1,81 @@
+@startuml
+' 字体设置（小四号宋体≈12px，取消粗体）
+skinparam defaultFontName "FangSong_GB2312"
+skinparam defaultFontSize 24px
+skinparam defaultFontStyle plain
+skinparam monospacedFontName "Times New Roman"
+skinparam monospacedFontSize 24px
+skinparam monospacedFontStyle plain
+
+' 强制单色模式，移除所有颜色
+skinparam monochrome true
+
+' 移除参与者和对象框的背景颜色
+skinparam sequence {
+    ParticipantBackground transparent  # 参与者背景透明
+    ActorBackground transparent        # 角色背景透明
+    BoxBackground transparent          # 框背景透明
+
+    ArrowColor #000000
+    LifeLineBorderColor #000000
+    ParticipantBorderColor #000000
+    ActorBorderColor #000000
+
+    ArrowThickness 2.0
+    LifeLineBorderThickness 2.0
+    ParticipantBorderThickness 2.0
+    ActorBorderThickness 2.0
+
+    LoopBorderColor transparent
+    LoopBackground transparent
+    LoopTextColor #000000
+
+    ' 条件分支颜色配置
+    AltBorderColor #000000      # alt分支边框颜色
+    AltBackground transparent  # alt分支背景透明
+    AltTextColor #000000       # alt分支文本颜色
+    OptBorderColor #000000      # opt分支边框颜色
+    OptBackground transparent  # opt分支背景透明
+    OptTextColor #000000       # opt分支文本颜色
+}
+
+participant "<u>:业务逻辑层</u>" as BL
+participant "<u>:RecommendationService</u>" as RecSvc
+participant "<u>:MovieMapper</u>" as MovieMapper
+participant "<u>:CommentMapper</u>" as CommentMapper
+participant "<u>:Recommendation表</u>" as RecTable
+
+BL -> RecSvc: 新用户注册，调用solveColdStart方法（用户ID）
+activate BL
+activate RecSvc
+
+RecSvc -> MovieMapper: 调用selectHighestRatedMovies方法查询高分电影列表
+activate MovieMapper --> RecSvc: 返回高分电影列表
+deactivate MovieMapper
+
+RecSvc -> RecSvc: 调用RecommendationUtil.randomSet获取随机索引
+activate RecSvc
+
+loop 遍历随机索引
+    RecSvc -> CommentMapper: 调用selectOne方法检查用户是否看过该电影
+    activate CommentMapper
+    CommentMapper --> RecSvc: 返回检查结果
+    deactivate CommentMapper
+
+    alt 用户未看过该电影
+        RecSvc -> RecSvc: 创建Recommendation对象
+        RecSvc -> RecTable: 插入Recommendation对象
+        activate RecTable
+        RecTable --> RecSvc: 插入成功反馈
+        deactivate RecTable
+    endif
+    alt 达到推荐数量
+        break
+    endif
+end
+
+RecSvc -> RecSvc: 保存推荐结果
+RecSvc --> BL: 完成冷启动问题解决，返回结果
+deactivate RecSvc
+deactivate BL
+@enduml

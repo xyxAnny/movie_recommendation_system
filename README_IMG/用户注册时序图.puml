@@ -1,0 +1,99 @@
+@startuml
+
+' 字体设置（小四号宋体≈12px，取消粗体）
+skinparam defaultFontName "FangSong_GB2312"
+skinparam defaultFontSize 24px
+skinparam defaultFontStyle plain
+skinparam monospacedFontName "Times New Roman"
+skinparam monospacedFontSize 24px
+skinparam monospacedFontStyle plain
+
+' 强制单色模式，移除所有颜色
+skinparam monochrome true
+
+' 移除参与者和对象框的背景颜色
+skinparam sequence {
+    ParticipantBackgroundColor transparent  # 参与者背景透明
+    ActorBackgroundColor transparent        # 角色背景透明
+    BoxBackgroundColor transparent          # 框背景透明
+
+    ArrowColor #000000
+    LifeLineBorderColor #000000
+    ParticipantBorderColor #000000
+    ActorBorderColor #000000
+
+    ArrowThickness 2.0
+    LifeLineBorderThickness 2.0
+    ParticipantBorderThickness 2.0
+    ActorBorderThickness 2.0
+
+    LoopBorderColor transparent
+    LoopBackgroundColor transparent
+    LoopTextColor #000000
+
+    ' 条件分支颜色配置
+    AltBorderColor #000000      # alt分支边框颜色
+    AltBackgroundColor transparent  # alt分支背景透明
+    AltTextColor #000000       # alt分支文本颜色
+    OptBorderColor #000000      # opt分支边框颜色
+    OptBackgroundColor transparent  # opt分支背景透明
+    OptTextColor #000000       # opt分支文本颜色
+}
+
+
+
+actor "<u>:用户</u>" as User
+participant "<u>:前端界面</u>" as Frontend
+participant "<u>:UserController</u>" as Controller
+participant "<u>:UserServiceImpl</u>" as Service
+participant "<u>:UserMapper</u>" as Mapper
+participant "<u>:RecommendationService</u>" as Recommendation
+
+User -> Frontend: 输入注册信息，点击注册
+activate Frontend
+activate User
+
+Frontend -> Controller: 发送注册请求（用户信息）
+activate Controller
+
+Controller -> Service: 调用register方法
+activate Service
+
+Service -> Mapper: 查询用户名是否存在
+activate Mapper
+Mapper --> Service: 返回查询结果
+deactivate Mapper
+
+alt [用户名不存在]
+    Service -> Mapper: 插入用户信息
+    activate Mapper
+    Mapper --> Service: 返回插入结果
+    deactivate Mapper
+
+    Service -> Recommendation: 解决用户冷启动问题
+    activate Recommendation
+    Recommendation --> Service: 处理完成
+    deactivate Recommendation
+
+    Service --> Controller: 返回成功信息
+    deactivate Service
+
+    Controller --> Frontend: 返回成功结果
+    deactivate Controller
+
+    Frontend --> User: 显示注册成功
+    deactivate Frontend
+    deactivate User
+else [用户名已存在]
+    Service --> Controller: 返回错误信息
+    deactivate Service
+
+    Controller --> Frontend: 返回错误结果
+    deactivate Controller
+
+    Frontend --> User: 显示注册失败
+    deactivate Frontend
+    deactivate User
+end
+
+@enduml

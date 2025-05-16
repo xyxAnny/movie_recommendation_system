@@ -20,16 +20,60 @@
         state
     </sql>
     <select id="selectUserTypes" resultType="java.lang.String">
-        SELECT t.type FROM `user` u
+        SELECT e.typeName FROM `user` u
         JOIN type_like tl on tl.uid = u.id
-        JOIN type t on t.id = tl.tid
+        JOIN (
+            SELECT 0 as tid, '剧情' as typeName UNION
+            SELECT 1, '喜剧' UNION
+            SELECT 2, '动作' UNION
+            SELECT 3, '爱情' UNION
+            SELECT 4, '科幻' UNION
+            SELECT 5, '动画' UNION
+            SELECT 6, '悬疑' UNION
+            SELECT 7, '惊悚' UNION
+            SELECT 8, '恐怖' UNION
+            SELECT 9, '犯罪' UNION
+            SELECT 10, '音乐' UNION
+            SELECT 11, '歌舞' UNION
+            SELECT 12, '传记' UNION
+            SELECT 13, '历史' UNION
+            SELECT 14, '战争' UNION
+            SELECT 15, '西部' UNION
+            SELECT 16, '奇幻' UNION
+            SELECT 17, '冒险' UNION
+            SELECT 18, '灾难' UNION
+            SELECT 19, '武侠' UNION
+            SELECT 20, '其他'
+        ) e ON e.tid = tl.tid
         WHERE u.id = ${id}
         ORDER BY tl.degree
     </select>
     <select id="selectUserRegions" resultType="java.lang.String">
-        SELECT r.region FROM `user` u
+        SELECT e.regionName FROM `user` u
         JOIN region_like rl on rl.uid = u.id
-        JOIN region r on r.id = rl.rid
+        JOIN (
+            SELECT 0 as rid, '中国大陆' as regionName UNION
+            SELECT 1, '美国' UNION
+            SELECT 2, '中国香港' UNION
+            SELECT 3, '中国台湾' UNION
+            SELECT 4, '日本' UNION
+            SELECT 5, '韩国' UNION
+            SELECT 6, '英国' UNION
+            SELECT 7, '法国' UNION
+            SELECT 8, '德国' UNION
+            SELECT 9, '意大利' UNION
+            SELECT 10, '西班牙' UNION
+            SELECT 11, '印度' UNION
+            SELECT 12, '泰国' UNION
+            SELECT 13, '俄罗斯' UNION
+            SELECT 14, '伊朗' UNION
+            SELECT 15, '加拿大' UNION
+            SELECT 16, '澳大利亚' UNION
+            SELECT 17, '爱尔兰' UNION
+            SELECT 18, '瑞典' UNION
+            SELECT 19, '巴西' UNION
+            SELECT 20, '丹麦'
+        ) e ON e.rid = rl.rid
         WHERE u.id = ${id}
         ORDER BY rl.degree
     </select>

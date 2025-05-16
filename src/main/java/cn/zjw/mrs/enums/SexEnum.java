@@ -39,13 +39,19 @@ public enum SexEnum {
      * @param sexName 性别名称
      * @return 性别标识
      */
-    public static Integer findSexBySexName (String sexName) {
+    public static Integer findSexBySexName(String sexName) {
+        System.out.println("接收到的性别参数: '" + sexName + "'");
+        
+        // 处理可能的JSON格式问题
+        sexName = sexName.replace("\"", "").trim();
+        
         for (SexEnum sexEnum : SexEnum.values()) {
             if (sexEnum.getSexName().equals(sexName)) {
                 return sexEnum.getSex();
             }
         }
-        throw new IllegalArgumentException("sexName is invalid");
+        System.out.println("无法匹配性别参数: '" + sexName + "'");
+        return SECRET.getSex(); // 默认返回保密而不是抛出异常
     }
 
     /**
@@ -53,7 +59,7 @@ public enum SexEnum {
      * @param sex 性别标识
      * @return 性别名称
      */
-    public static String findSexNameBySex (Integer sex) {
+    public static String findSexNameBySex(Integer sex) {
         for (SexEnum sexEnum : SexEnum.values()) {
             if (sexEnum.getSex().equals(sex)) {
                 return sexEnum.getSexName();

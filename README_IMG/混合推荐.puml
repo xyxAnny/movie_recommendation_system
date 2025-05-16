@@ -1,0 +1,69 @@
+@startuml
+' 字体设置（小四号宋体≈12px，取消粗体）
+skinparam defaultFontName "FangSong_GB2312"
+skinparam defaultFontSize 24px
+skinparam defaultFontStyle plain
+skinparam monospacedFontName "Times New Roman"
+skinparam monospacedFontSize 24px
+skinparam monospacedFontStyle plain
+
+' 强制单色模式，移除所有颜色
+skinparam monochrome true
+
+' 移除参与者和对象框的背景颜色
+skinparam sequence {
+    ParticipantBackgroundColor transparent  # 参与者背景透明
+    ActorBackgroundColor transparent        # 角色背景透明
+    BoxBackgroundColor transparent          # 框背景透明
+
+    ArrowColor #000000
+    LifeLineBorderColor #000000
+    ParticipantBorderColor #000000
+    ActorBorderColor #000000
+
+    ArrowThickness 2.0
+    LifeLineBorderThickness 2.0
+    ParticipantBorderThickness 2.0
+    ActorBorderThickness 2.0
+
+    LoopBorderColor transparent
+    LoopBackgroundColor transparent
+    LoopTextColor #000000
+
+    ' 条件分支颜色配置
+    AltBorderColor #000000      # alt分支边框颜色
+    AltBackgroundColor transparent  # alt分支背景透明
+    AltTextColor #000000       # alt分支文本颜色
+    OptBorderColor #000000      # opt分支边框颜色
+    OptBackgroundColor transparent  # opt分支背景透明
+    OptTextColor #000000       # opt分支文本颜色
+}
+
+
+
+participant "<u>:业务逻辑层</u>" as BL
+participant "<u>:RecommendationService</u>" as RecSvc
+participant "<u>:ContentBasedService</u>" as CBSvc
+participant "<u>:CollaborativeFilteringService</u>" as CFSvc
+
+BL -> RecSvc: 调用hybridRecommendation方法（用户ID）
+activate BL
+activate RecSvc
+
+RecSvc -> CBSvc: 调用contentBasedRecommendation方法（用户ID）
+activate CBSvc
+CBSvc --> RecSvc: 返回基于内容的推荐结果
+deactivate CBSvc
+
+RecSvc -> CFSvc: 调用userCollaborativeFilteringRecommendation方法（用户ID）
+activate CFSvc
+CFSvc --> RecSvc: 返回基于用户协同过滤的推荐结果
+deactivate CFSvc
+
+RecSvc -> RecSvc: 融合两种推荐结果
+activate RecSvc
+
+RecSvc --> BL: 返回混合式推荐结果
+deactivate RecSvc
+deactivate BL
+@enduml

@@ -55,4 +55,4 @@ aliyun:
 
 # 本地存储头像的目录
 local:
-  avatar-dir: ${user.dir}/src/main/resources/static/avatars
+  avatar-dir: /tmp/avatars  # 使用系统临时目录或其他确定有写权限的路径

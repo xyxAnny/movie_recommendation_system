@@ -51,11 +51,27 @@ public enum TypeEnum {
     }
 
     /**
+     * 获取类型标识
+     * @return 类型标识
+     */
+    public Integer getType() {
+        return type;
+    }
+
+    /**
+     * 获取类型名称
+     * @return 类型名称
+     */
+    public String getTypeName() {
+        return typeName;
+    }
+
+    /**
      * 通过类型名称查找类型标识
      * @param typeName 类型名称
      * @return 类型标识
      */
-    public static Integer findTypeByTypeName (String typeName) {
+    public static Integer findTypeByTypeName(String typeName) {
         for (TypeEnum typeEnum : TypeEnum.values()) {
             if (typeEnum.getTypeName().equals(typeName)) {
                 return typeEnum.getType();
@@ -69,7 +85,7 @@ public enum TypeEnum {
      * @param type 类型标识
      * @return 类型名称
      */
-    public static String findRegionNameByRegion (Integer type) {
+    public static String findTypeNameByType(Integer type) {
         for (TypeEnum typeEnum : TypeEnum.values()) {
             if (typeEnum.getType().equals(type)) {
                 return typeEnum.getTypeName();

@@ -51,11 +51,27 @@ public enum RegionEnum {
     }
 
     /**
+     * 获取地区标识
+     * @return 地区标识
+     */
+    public Integer getRegion() {
+        return region;
+    }
+
+    /**
+     * 获取地区名称
+     * @return 地区名称
+     */
+    public String getRegionName() {
+        return regionName;
+    }
+
+    /**
      * 通过地区名称查找地区标识
      * @param regionName 地区名称
      * @return 地区标识
      */
-    public static Integer findRegionByRegionName (String regionName) {
+    public static Integer findRegionByRegionName(String regionName) {
         for (RegionEnum regionEnum : RegionEnum.values()) {
             if (regionEnum.getRegionName().equals(regionName)) {
                 return regionEnum.getRegion();
@@ -69,7 +85,7 @@ public enum RegionEnum {
      * @param region 地区标识
      * @return 地区名称
      */
-    public static String findRegionNameByRegion (Integer region) {
+    public static String findRegionNameByRegion(Integer region) {
         for (RegionEnum regionEnum : RegionEnum.values()) {
             if (regionEnum.getRegion().equals(region)) {
                 return regionEnum.getRegionName();

@@ -1,0 +1,70 @@
+@startuml
+
+' 字体设置（小四号宋体≈12px，取消粗体）
+skinparam defaultFontName "FangSong_GB2312"
+skinparam defaultFontSize 24px
+skinparam defaultFontStyle plain
+skinparam monospacedFontName "Times New Roman"
+skinparam monospacedFontSize 24px
+skinparam monospacedFontStyle plain
+
+' 强制单色模式，移除所有颜色
+skinparam monochrome true
+
+' 移除参与者和对象框的背景颜色
+skinparam sequence {
+    ParticipantBackgroundColor transparent  # 参与者背景透明
+    ActorBackgroundColor transparent        # 角色背景透明
+    BoxBackgroundColor transparent          # 框背景透明
+
+    ArrowColor #000000
+    LifeLineBorderColor #000000
+    ParticipantBorderColor #000000
+    ActorBorderColor #000000
+
+    ArrowThickness 2.0
+    LifeLineBorderThickness 2.0
+    ParticipantBorderThickness 2.0
+    ActorBorderThickness 2.0
+
+    LoopBorderColor transparent
+    LoopBackgroundColor transparent
+    LoopTextColor #000000
+
+    ' 条件分支颜色配置
+    AltBorderColor #000000      # alt分支边框颜色
+    AltBackgroundColor transparent  # alt分支背景透明
+    AltTextColor #000000       # alt分支文本颜色
+    OptBorderColor #000000      # opt分支边框颜色
+    OptBackgroundColor transparent  # opt分支背景透明
+    OptTextColor #000000       # opt分支文本颜色
+}
+
+
+
+participant "<u>:业务逻辑层</u>" as BL
+participant "<u>:MovieService</u>" as Service
+participant "<u>:MovieMapper</u>" as Mapper
+
+BL -> Service: 调用contentBasedRecommendation方法（用户ID）
+activate BL
+activate Service
+
+Service -> Mapper: 查询用户喜欢的电影信息
+activate Mapper
+Mapper --> Service: 返回用户喜欢的电影信息
+deactivate Mapper
+
+Service -> Service: 计算电影之间的相似度
+activate Service
+
+Service -> Mapper: 查询相似电影信息
+activate Mapper
+Mapper --> Service: 返回相似电影信息
+deactivate Mapper
+
+Service --> BL: 返回相似电影列表
+deactivate Service
+deactivate BL
+
+@enduml

@@ -82,6 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/check/username/exists",
                         "/mail/auth/code/under/logout",
                         "/images/**",
+                        "/local/avatar/**",
                         "/find/password"
                 ).permitAll()
                 .antMatchers("/user/login").anonymous()

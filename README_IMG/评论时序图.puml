@@ -1,0 +1,88 @@
+@startuml
+' 字体设置（小四号宋体≈12px，取消粗体）
+skinparam defaultFontName "FangSong_GB2312"
+skinparam defaultFontSize 24px
+skinparam defaultFontStyle plain
+skinparam monospacedFontName "Times New Roman"
+skinparam monospacedFontSize 24px
+skinparam monospacedFontStyle plain
+
+' 强制单色模式，移除所有颜色
+skinparam monochrome true
+
+' 移除参与者和对象框的背景颜色
+skinparam sequence {
+    ParticipantBackgroundColor transparent  # 参与者背景透明
+    ActorBackgroundColor transparent        # 角色背景透明
+    BoxBackgroundColor transparent          # 框背景透明
+
+    ArrowColor #000000
+    LifeLineBorderColor #000000
+    ParticipantBorderColor #000000
+    ActorBorderColor #000000
+
+    ArrowThickness 2.0
+    LifeLineBorderThickness 2.0
+    ParticipantBorderThickness 2.0
+    ActorBorderThickness 2.0
+
+    LoopBorderColor transparent
+    LoopBackgroundColor transparent
+    LoopTextColor #000000
+
+    ' 条件分支颜色配置
+    AltBorderColor #000000      # alt分支边框颜色
+    AltBackgroundColor transparent  # alt分支背景透明
+    AltTextColor #000000       # alt分支文本颜色
+    OptBorderColor #000000      # opt分支边框颜色
+    OptBackgroundColor transparent  # opt分支背景透明
+    OptTextColor #000000       # opt分支文本颜色
+}
+
+
+
+actor "<u>:User</u>" as User
+participant "<u>:前端界面</u>" as Frontend
+participant "<u>:MovieController</u>" as Controller
+participant "<u>:JwtUtil</u>" as Jwt
+participant "<u>:CommentService</u>" as CommentSvc
+participant "<u>:CommentMapper</u>" as CommentMap
+
+User -> Frontend: 输入评论内容，点击提交
+activate User
+activate Frontend
+
+Frontend -> Controller: 发送评论请求（电影ID, token, 评论内容）
+activate Controller
+
+Controller -> Jwt: 从token中获取用户ID
+activate Jwt
+Jwt --> Controller: 返回用户ID
+deactivate Jwt
+
+Controller -> CommentSvc: 调用addComment方法（用户ID, 电影ID, 评论内容）
+activate CommentSvc
+
+CommentSvc -> CommentMap: 插入评论信息
+activate CommentMap
+CommentMap --> CommentSvc: 返回插入结果
+deactivate CommentMap
+
+alt [评论成功]
+    CommentSvc --> Controller: 返回成功信息
+    deactivate CommentSvc
+    Controller --> Frontend: 返回成功结果
+    deactivate Controller
+    Frontend --> User: 显示评论成功
+    deactivate Frontend
+    deactivate User
+else [评论失败]
+    CommentSvc --> Controller: 返回失败信息
+    deactivate CommentSvc
+    Controller --> Frontend: 返回错误结果
+    deactivate Controller
+    Frontend --> User: 显示评论失败
+    deactivate Frontend
+    deactivate User
+end
+@enduml
